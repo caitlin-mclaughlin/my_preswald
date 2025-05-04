@@ -194,9 +194,21 @@ def query_averages(load_data, setup_slider):
         sql_df1["Average Bleaching Severity"] = sql_df1["Average Bleaching Severity"].map(severity_map)
 
 
+        overall_species = round(sum(sql_df1["Average Species Observed"]) / len(sql_df1["Average Species Observed"]), 2)
         print_max = severity_map.get(int(max_severity), "Unknown")
         print_min = severity_map.get(int(min_severity), "Unknown")
-        text(f"## Map of Locations with Average pH Level and Average Species Observed in {current_year}\nThe global Average Bleaching Severity in {current_year} was {print_max} to {print_min}")
+        if (print_max == print_min):
+            text(
+                f"## Map of Locations with Average pH Level and Average Species Observed in {current_year}"
+                f"\nThe global average bleaching severity in {current_year} was {print_max}."
+                f"\n\nThe average number of species observed was {overall_species}."
+                )
+        else:
+            text(
+                f"## Map of Locations with Average pH Level and Average Species Observed in {current_year}"
+                 f"\nThe global average bleaching severity in {current_year} was {print_max} to {print_min}."
+                 f"\n\nThe average number of species observed was {overall_species}."
+                 )
 
         # Create a map of the locations with high bleaching
         fig_map1 = px.scatter_geo(
@@ -213,6 +225,13 @@ def query_averages(load_data, setup_slider):
                 "Average Species Observed": True,
                 "Average Bleaching Severity": True
             },
+            color_discrete_map={
+                "None": "lightgreen",
+                "Low": "cornflowerblue",
+                "Medium": "plum",
+                "High": "salmon"
+            },
+            opacity=0.8 
         )
 
         fig_map1.update_layout(
